@@ -71,15 +71,22 @@
         <hr class="sidebar-divider my-0">
         <li class="nav-item">
             <a class="nav-link" href="">
-                <i class="fas fa-clipboard-list"></i>
+                <i class="fa-solid fa-gauge"></i>
                 <span>Dashboard</span>
             </a>
         </li>
         <hr class="sidebar-divider my-0">
         <li class="nav-item">
             <a class="nav-link" href="">
-                <i class="fas fa-clipboard-list"></i>
+                <i class="fa-solid fa-truck"></i>
                 <span>Barang</span>
+            </a>
+        </li>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="fa-solid fa-handshake"></i>
+                <span>Transaksi</span>
             </a>
         </li>
         
