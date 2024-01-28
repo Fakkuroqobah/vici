@@ -138,8 +138,8 @@ $(document).ready(function() {
     });
     
 
-    var modalEdit_kode = $('#modal-edit input[name="kode"]');
-    var modalEdit_nama = $('#modal-edit input[name="nama"]');
+    var modalEdit_kode = $('#modal-edit input[name="kode_barang"]');
+    var modalEdit_nama = $('#modal-edit input[name="nama_barang"]');
     var modalEdit_harga = $('#modal-edit input[name="harga"]');
     $('#modal-edit').on('hidden.bs.modal', function () {
         modalEdit_kode.val("");
