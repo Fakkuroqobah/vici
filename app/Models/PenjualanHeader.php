@@ -17,6 +17,21 @@ class PenjualanHeader extends Model
         return $this->findAll();
     }
 
+    public function showDetail($id)
+    {
+        return $this
+            ->select('penjualan_header.*, penjualan_header_detail.*,master_barang.*')
+            ->join('penjualan_header_detail', 'penjualan_header.no_transaksi = penjualan_header_detail.no_transaksi')
+            ->join('master_barang', 'penjualan_header_detail.kode_barang = master_barang.kode_barang')
+            ->where('penjualan_header_detail.no_transaksi', $id)
+            ->findAll();
+    }
+
+    public function showPenjualan($id)
+    {
+        return $this->find($id);
+    }
+
     public function savePenjualan($data)
     {
         return $this->insert($data);

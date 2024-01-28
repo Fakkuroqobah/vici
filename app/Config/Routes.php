@@ -16,6 +16,6 @@ $routes->delete('/barang/delete/(:num)', 'BarangController::delete/$1');
 
 $routes->get('/penjualan', 'PenjualanController::index');
 $routes->get('/penjualan/datatable', 'PenjualanController::datatable');
-$routes->get('/penjualan/show/(:num)', 'PenjualanController::show/$1');
+$routes->get('/penjualan/show/(:segment)', 'PenjualanController::show/$1');
 $routes->post('/penjualan/store', 'PenjualanController::store');
 $routes->delete('/penjualan/delete/(:num)', 'PenjualanController::delete/$1');

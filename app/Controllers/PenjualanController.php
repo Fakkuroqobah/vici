@@ -31,6 +31,13 @@ class PenjualanController extends BaseController
         return view('penjualan/penjualan', $data);
     }
 
+    public function show($id)
+    {
+        $data['penjualan'] = $this->penjualan->showPenjualan($id);
+        $data['detail'] = $this->penjualan->showDetail($id);
+        return view('penjualan/show', $data);
+    }
+
     public function datatable()
     {
         $data = $this->db->table('penjualan_header')->select(['no_transaksi', 'tgl_transaksi', 'customer', 'kode_promo', 'total_bayar', 'ppn', 'grand_total']);
@@ -38,7 +45,7 @@ class PenjualanController extends BaseController
             ->addNumbering()
             ->add('aksi', function($row){
                 return '
-                <a href="#" class="btn btn-sm mr-2 btn-success">Detail</a>
+                <a href="'. base_url('penjualan/show/') . $row->no_transaksi .'" class="btn btn-sm mr-2 btn-success">Detail</a>
                 <a href="#" class="btn btn-sm btn-danger mt-2 mt-lg-0 mb-2 mb-lg-0 delete" data-id="'. $row->no_transaksi .'">Delete</a>';
             }, 'last')
             ->toJson();
