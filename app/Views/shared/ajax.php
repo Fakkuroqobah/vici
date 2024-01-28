@@ -36,20 +36,20 @@ function requestAjaxPost(opt, form, txt) {
         opt.element.attr("disabled", false);
 
         if(err.status == 422) {
-            if(err.responseJSON['data'] !== undefined) {
+            if(err.responseJSON == undefined) {
                 Swal.fire({
                     toast: true,
                     position: 'top-end',
                     icon: 'error',
-                    title: err.responseJSON.data,
+                    title: err.responseJSON,
                     showConfirmButton: false,
                     timer: 4000,
                     background: '#DC2626',
                 });
             }else{
                 var errorMessage = '';
-                $.each(err.responseJSON['errors'], function (i, error) {
-                    errorMessage += `<li>${error[0]}</li>`
+                $.each(err.responseJSON, function (i, error) {
+                    errorMessage += `<li>${error}</li>`
                 });
 
                 $('.error-message').removeClass("d-none");

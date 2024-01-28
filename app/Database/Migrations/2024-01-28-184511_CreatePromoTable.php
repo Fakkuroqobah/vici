@@ -11,7 +11,7 @@ class CreatePromoTable extends Migration
         $this->forge->addField([
             'kode_promo' => [
                 'type' => 'VARCHAR',
-                'constraint' => 20,
+                'constraint' => 255,
             ],
             'nama_promo' => [
                 'type' => 'VARCHAR',

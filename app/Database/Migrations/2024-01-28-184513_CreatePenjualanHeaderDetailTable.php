@@ -17,7 +17,7 @@ class CreatePenjualanHeaderDetailTable extends Migration
             ],
             'no_transaksi' => [
                 'type' => 'VARCHAR',
-                'constraint' => 50,
+                'constraint' => 255,
             ],
             'kode_barang' => [
                 'type' => 'VARCHAR',
