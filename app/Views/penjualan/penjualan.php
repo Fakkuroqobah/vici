@@ -64,7 +64,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Kode promo</label>
-                        <select class="form-control" name="detail[]['kode_promo]">
+                        <select class="form-control" name="kode_promo">
                             <option value="">Pilih promo</option>
                             <?php foreach($promo as $val) : ?>
                                 <option value="<?= $val['kode_promo'] ?>"><?= $val['kode_promo'] ?></option>

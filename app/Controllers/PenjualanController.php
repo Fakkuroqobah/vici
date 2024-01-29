@@ -78,10 +78,11 @@ class PenjualanController extends BaseController
 
         $this->db->transBegin();
         try {
+            $no = $this->request->getPost('no_transaksi');
             $data = $this->penjualan->savePenjualan([
-                'no_transaksi' => $this->request->getPost('no_transaksi'),
+                'no_transaksi' => $no,
                 'tgl_transaksi' => date('Y-m-d'),
-                'cutomer' => $this->request->getPost('customer'),
+                'customer' => $this->request->getPost('customer'),
                 'kode_promo' => $this->request->getPost('kode_promo'),
                 'total_bayar' => $total_bayar,
                 'ppn' => $this->request->getPost('ppn'),
@@ -99,10 +100,11 @@ class PenjualanController extends BaseController
                 }
 
                 $this->penjualanDetail->savePenjualanDetail([
-                    'no_transaksi' => $this->request->getPost('no_transaksi'),
+                    'id' => '',
+                    'no_transaksi' => $no,
                     'kode_barang' => $a[0],
                     'qty' => $value['qty'],
-                    'harga' => $a[1],
+                    'harga' => $a[1] * $value['qty'],
                     'discount' => $potongan,
                     'subtotal' => $a[1] - $potongan,
                 ]);
