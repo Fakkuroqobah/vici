@@ -1,4 +1,3 @@
-@extends('layouts.index')
 <?= $this->extend('index') ?>
 
 <?= $this->section('breadcrumb') ?>

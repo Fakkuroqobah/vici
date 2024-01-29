@@ -1,8 +1,7 @@
-@extends('layouts.index')
 <?= $this->extend('index') ?>
 
 <?= $this->section('breadcrumb') ?>
-    <li class="breadcrumb-item active" aria-current="page">Barang</li>
+    <li class="breadcrumb-item active" aria-current="page">Transaksi</li>
 <?= $this->endSection() ?>
 
 <?= $this->section('css') ?>
@@ -52,17 +51,32 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="">Kode barang</label>
-                        <input type="text" name="kode_barang" class="form-control" autofocus autocomplete="off">
+                        <label for="">No transaksi</label>
+                        <input type="text" name="no_transaksi" class="form-control" autofocus autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="">Nama barang</label>
-                        <input type="text" name="nama_barang" class="form-control" autocomplete="off">
+                        <label for="">Customer</label>
+                        <input type="text" name="customer" class="form-control" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="">Harga barang</label>
-                        <input type="number" name="harga" class="form-control" autocomplete="off">
+                        <label for="">PPN</label>
+                        <input type="number" name="ppn" class="form-control" autocomplete="off">
                     </div>
+                    <div class="form-group">
+                        <label for="">Kode promo</label>
+                        <select class="form-control" name="detail[]['kode_promo]">
+                            <option value="">Pilih promo</option>
+                            <?php foreach($promo as $val) : ?>
+                                <option value="<?= $val['kode_promo'] ?>"><?= $val['kode_promo'] ?></option>
+                            <?php endforeach ?>
+                        </select>
+                    </div>
+
+                    <button type="button" class="btn btn-sm btn-success btn-block mb-3" id="btn-add">Tambah barang</button>
+                    <table id="area">
+                        
+                    </table>
+                    <hr>
                 </div>
                 <div class="modal-footer">
                     <button type="button" name="close-modal" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -86,7 +100,46 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
+
 $(document).ready(function() {
+    var id = 0;
+
+    var template = `<tr>
+        <td>
+            <div class="form-group">
+                <label for="">Barang</label>
+                <select name="detail[${id}][kode_barang]" class="form-control" id="">
+                    <?php foreach($barang as $valu) : ?>
+                        <option value="<?= $valu['kode_barang'] ?>-<?= $valu['harga'] ?>"><?= $valu['kode_barang'] ?></option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <label for="">QTY</label>
+                <input type="number" class="form-control" name="detail[${id}][qty]">
+            </div>
+        </td>
+        <td>
+            <button type="button" class="btn-del btn btn-sm btn-danger">Hapus</button>
+        </td>
+    </tr>`;
+
+    $('#btn-add').click(function(){
+        $('#area').append(template);
+        id++;
+    });
+
+    $('#area').on('click', '.btn-del', function() {
+        var el = $('#area tr');
+
+        if(el.length > 1) {
+            $(this).closest('tr').remove();
+            resetNumber();
+        }
+    });
+
     var table = $('#table').DataTable({
         processing: true,
         serverSide: true,

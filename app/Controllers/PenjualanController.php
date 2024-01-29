@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\PenjualanHeader;
+use App\Models\PenjualanHeaderDetail;
 use App\Models\MasterBarang;
 use App\Models\Promo;
 
@@ -12,6 +13,7 @@ use \Hermawan\DataTables\DataTable;
 class PenjualanController extends BaseController
 {
     protected $penjualan;
+    protected $penjualanDetail;
     protected $barang;
     protected $promo;
     protected $db;
@@ -19,6 +21,7 @@ class PenjualanController extends BaseController
     public function __construct()
     {
         $this->penjualan = new PenjualanHeader();
+        $this->penjualanDetail = new PenjualanHeaderDetail();
         $this->barang = new MasterBarang();
         $this->promo = new Promo();
         $this->db = db_connect();
@@ -26,7 +29,7 @@ class PenjualanController extends BaseController
 
     public function index()
     {
-        $data['barang'] = $this->barang->get();
+        $data['barang'] = $this->barang->getBarang();
         $data['promo'] = $this->promo->get();
         return view('penjualan/penjualan', $data);
     }
@@ -57,7 +60,6 @@ class PenjualanController extends BaseController
         $validation->setRules([
             'no_transaksi' => 'required|max_length[255]|is_unique[penjualan_header.no_transaksi]',
             'customer' => 'required|max_length[255]',
-            'total_bayar' => 'required',
             'ppn' => 'required',
 
             'detail.*.kode_barang' => 'required',
@@ -68,32 +70,48 @@ class PenjualanController extends BaseController
             return $this->response->setJSON($validation->getErrors())->setStatusCode(422);
         }
 
-        $grand_total = 0;
+        $total_bayar = 0;
         foreach ($this->request->getPost('detail') as $value) {
-            $grand_total += $value['harga'];
+            $a = explode('-', $value['kode_barang']);
+            $total_bayar += $a[1];
         }
-
-        if($grand_total < $this->request->getPost('total_bayar')) {
-            return $this->response->setJSON(['error' => 'total bayar tidak cukup'])->setStatusCode(422);
-        }
-
-        die('oke');
 
         $this->db->transBegin();
         try {
             $data = $this->penjualan->savePenjualan([
                 'no_transaksi' => $this->request->getPost('no_transaksi'),
                 'tgl_transaksi' => date('Y-m-d'),
-                'cutomer' => $this->request->getPost('cutomer'),
+                'cutomer' => $this->request->getPost('customer'),
                 'kode_promo' => $this->request->getPost('kode_promo'),
-                'total_bayar' => $this->request->getPost('total_bayar'),
-                'ppn' => $grand_total - $this->request->getPost('ppn'),
+                'total_bayar' => $total_bayar,
+                'ppn' => $this->request->getPost('ppn'),
+                'grand_total' => $total_bayar + $this->request->getPost('ppn'),
             ]);
 
-            $db->transCommit();
+            foreach ($this->request->getPost('detail') as $value) {
+                $a = explode('-', $value['kode_barang']);
+
+                $potongan = 0;
+                if($this->request->getPost('kode_promo') == 'promo-001') {
+                    if($a[0] == '003' && $value['qty'] >= 2) {
+                        $potongan = 3000;
+                    }
+                }
+
+                $this->penjualanDetail->savePenjualanDetail([
+                    'no_transaksi' => $this->request->getPost('no_transaksi'),
+                    'kode_barang' => $a[0],
+                    'qty' => $value['qty'],
+                    'harga' => $a[1],
+                    'discount' => $potongan,
+                    'subtotal' => $a[1] - $potongan,
+                ]);
+            }
+
+            $this->db->transCommit();
             return $this->response->setJSON($data);
         } catch (\Exception $e) {
-            $db->transRollback();
+            $this->db->transRollback();
             return $this->response->setJSON($e->getMessage())->setStatusCode(500);
         }
     }
