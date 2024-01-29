@@ -101,10 +101,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
 
-$(document).ready(function() {
-    var id = 0;
-
-    var template = `<tr>
+function template(id)
+{
+    return `<tr>
         <td>
             <div class="form-group">
                 <label for="">Barang</label>
@@ -125,9 +124,13 @@ $(document).ready(function() {
             <button type="button" class="btn-del btn btn-sm btn-danger">Hapus</button>
         </td>
     </tr>`;
+}
+
+$(document).ready(function() {
+    var id = 0;
 
     $('#btn-add').click(function(){
-        $('#area').append(template);
+        $('#area').append(template(id));
         id++;
     });
 

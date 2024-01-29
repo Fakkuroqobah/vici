@@ -73,7 +73,7 @@ class PenjualanController extends BaseController
         $total_bayar = 0;
         foreach ($this->request->getPost('detail') as $value) {
             $a = explode('-', $value['kode_barang']);
-            $total_bayar += $a[1];
+            $total_bayar += $a[1] * $value['qty'];
         }
 
         $this->db->transBegin();
