@@ -23,6 +23,7 @@ class CreatePenjualanHeaderTable extends Migration
             'kode_promo' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
+                'null' => true,
             ],
             'total_bayar' => [
                 'type' => 'INT',

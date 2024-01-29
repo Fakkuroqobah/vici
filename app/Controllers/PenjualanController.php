@@ -71,43 +71,64 @@ class PenjualanController extends BaseController
         }
 
         $total_bayar = 0;
+        $potongan = 0;
         foreach ($this->request->getPost('detail') as $value) {
             $a = explode('-', $value['kode_barang']);
             $total_bayar += $a[1] * $value['qty'];
+
+            if($this->request->getPost('kode_promo') == 'promo-001') {
+                if($a[0] == '003' && $value['qty'] >= 2) {
+                    $potongan = 3000;
+                }
+            }
         }
 
         $this->db->transBegin();
         try {
             $no = $this->request->getPost('no_transaksi');
+            $kode_promo = $this->request->getPost('kode_promo');
+            if(empty($this->request->getPost('kode_promo'))) {
+                $kode_promo = null;
+            }
+
             $data = $this->penjualan->savePenjualan([
                 'no_transaksi' => $no,
                 'tgl_transaksi' => date('Y-m-d'),
                 'customer' => $this->request->getPost('customer'),
-                'kode_promo' => $this->request->getPost('kode_promo'),
+                'kode_promo' => $kode_promo,
                 'total_bayar' => $total_bayar,
-                'ppn' => $this->request->getPost('ppn'),
-                'grand_total' => $total_bayar + $this->request->getPost('ppn'),
+                'ppn' => $this->request->getPost('ppn') ?? 0,
+                'grand_total' => ($total_bayar + $this->request->getPost('ppn')) - $potongan,
             ]);
 
-            foreach ($this->request->getPost('detail') as $value) {
-                $a = explode('-', $value['kode_barang']);
-
-                $potongan = 0;
-                if($this->request->getPost('kode_promo') == 'promo-001') {
+            if($data) {
+                foreach ($this->request->getPost('detail') as $value) {
+                    $a = explode('-', $value['kode_barang']);
+    
                     if($a[0] == '003' && $value['qty'] >= 2) {
-                        $potongan = 3000;
+                        $this->penjualanDetail->savePenjualanDetail([
+                            'id' => '',
+                            'no_transaksi' => $no,
+                            'kode_barang' => $a[0],
+                            'qty' => $value['qty'],
+                            'harga' => $a[1] * $value['qty'],
+                            'discount' => $potongan,
+                            'subtotal' => ($a[1] * $value['qty']) - $potongan,
+                        ]);
+                    }else{
+                        $this->penjualanDetail->savePenjualanDetail([
+                            'id' => '',
+                            'no_transaksi' => $no,
+                            'kode_barang' => $a[0],
+                            'qty' => $value['qty'],
+                            'harga' => $a[1] * $value['qty'],
+                            'discount' => 0,
+                            'subtotal' => ($a[1] * $value['qty']),
+                        ]);
                     }
                 }
-
-                $this->penjualanDetail->savePenjualanDetail([
-                    'id' => '',
-                    'no_transaksi' => $no,
-                    'kode_barang' => $a[0],
-                    'qty' => $value['qty'],
-                    'harga' => $a[1] * $value['qty'],
-                    'discount' => $potongan,
-                    'subtotal' => $a[1] - $potongan,
-                ]);
+            }else{
+                return $this->response->setJSON()->setStatusCode(500);
             }
 
             $this->db->transCommit();

@@ -42,6 +42,8 @@ class CreatePenjualanHeaderDetailTable extends Migration
         ]);
 
         $this->forge->addKey('id', true);
+        $this->forge->addForeignKey('no_transaksi', 'penjualan_header', 'no_transaksi', 'RESTRICT', 'CASCADE');
+
         $this->forge->createTable('penjualan_header_detail');
     }
 

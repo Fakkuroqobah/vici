@@ -20,7 +20,7 @@ class PenjualanHeader extends Model
     public function showDetail($id)
     {
         return $this
-            ->select('penjualan_header.*, penjualan_header_detail.*,master_barang.*')
+            ->select('penjualan_header.*, penjualan_header_detail.*,master_barang.nama_barang')
             ->join('penjualan_header_detail', 'penjualan_header.no_transaksi = penjualan_header_detail.no_transaksi')
             ->join('master_barang', 'penjualan_header_detail.kode_barang = master_barang.kode_barang')
             ->where('penjualan_header_detail.no_transaksi', $id)
